@@ -1,22 +1,21 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
-const PORT = 5000;
 
-// CORS
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
-  next();
-});
+// ✅ FIX 1: Use cloud-assigned PORT
+const PORT = process.env.PORT || 5000;
+
+// ✅ FIX 2: Proper CORS
+app.use(cors());
 
 // Root test
 app.get('/', (req, res) => {
   res.send('Backend root working');
 });
 
-// HYBRID API (External data + internal genre logic)
+// Quotes API
 app.get('/api/quote', async (req, res) => {
   const genre = req.query.genre || 'life';
 
@@ -25,7 +24,8 @@ app.get('/api/quote', async (req, res) => {
       'https://api.api-ninjas.com/v1/quotes',
       {
         headers: {
-          'X-Api-Key': 'qAsDsOT0aWySDDO8B0kdbA==sTxSHzOzmKQEeepg'
+          // ✅ FIX 3: Environment variable
+          'X-Api-Key': process.env.API_NINJAS_KEY
         }
       }
     );
@@ -33,17 +33,17 @@ app.get('/api/quote', async (req, res) => {
     res.json({
       quote: response.data[0].quote,
       author: response.data[0].author,
-      genre: genre
+      genre
     });
   } catch (error) {
     res.json({
       quote: 'Keep going. Everything you need will come to you at the perfect time.',
       author: 'Unknown',
-      genre: genre
+      genre
     });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
