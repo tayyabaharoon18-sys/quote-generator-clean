@@ -30,7 +30,10 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch(`/api/quote?genre=${genre}`);
+      const response = await fetch(
+  `https://quote-generator-clean.onrender.com/api/quote?genre=${genre}`
+);
+
 
       if (!response.ok) {
         throw new Error('Backend error');
